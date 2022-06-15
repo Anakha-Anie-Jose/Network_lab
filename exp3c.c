@@ -1,34 +1,29 @@
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#define PORT 8080
- 
-int main(int argc, char const* argv[])
+#include<stdio.h>
+#include<string.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
+#include<unistd.h>
+void main()
 {
-    int sock = 0, valread;
-    struct sockaddr_in serv_addr;
-    char* hello = "Hello";
-    char buffer[1024] = { 0 };
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("\n Socket creation error \n");
-        return -1;
-    }
- 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
-    serv_addr.sin_addr.s_addr=inet_addr("127.0.0.1");
- 
-    if (connect(sock, (struct sockaddr*)&serv_addr,
-                sizeof(serv_addr))
-        < 0) {
-        printf("\nConnection Failed \n");
-        return -1;
-    }
-    send(sock, hello, strlen(hello), 0);
-    printf("Message sent to server\n");
-    valread = read(sock, buffer, 1024);
-    printf("%s\n", buffer);
-    return 0;
+int sockid,valread;
+struct sockaddr_in client;
+char * msg="Hello, Client this side";
+char buf[1000];
+if((sockid=socket(AF_INET,SOCK_STREAM,0))<0)
+{
+printf("Error!!\n");
+return;
+}
+client.sin_family=AF_INET;
+client.sin_port=htons(8080);
+client.sin_addr.s_addr=INADDR_ANY;
+if(connect(sockid,(struct sockaddr*)&client,sizeof(client))<0)
+{
+printf("Connection Failed!!\n");
+return;
+}
+send(sockid,msg,strlen(msg),0);
+printf("Message sent to server\n");
+valread=read(sockid,buf,1000);
+printf("Message from server: %s",buf);
 }
